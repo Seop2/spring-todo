@@ -29,14 +29,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="todo : ${todoList}">
+            <tr th:each="todo : ${todoList}" th:data-idx="${todo.idx}">
                 <td th:if="${todo.status}" th:text="${todo.description}" style="text-decoration: line-through"></td>
-                <td th:if="!${todo.status}" th:text="${todo.description}" contenteditable="true" class="edit" th:data-idx="${todo.idx}"></td>
+                <td th:if="!${todo.status}" th:text="${todo.description}" contenteditable="true" class="edit"></td>
                 <td th:text="${todo.createdDate} ? ${#temporals.format(todo.createdDate,'yyyy-MM-dd')} : ${todo.createdDate}"></td>
                 <td th:text="${todo.completedDate} ? ${#temporals.format(todo.completedDate,'yyyy-MM-dd')} : ${todo.completedDate}"></td>
                 <td>
-                    <input type="checkbox" class="status" th:checked="${todo.status}" th:value="${todo.idx}">
-                    <button type="button" class="btn btn-danger delete" th:value="${todo.idx}">삭제</button>
+                    <input type="checkbox" class="status" th:checked="${todo.status}">
+                    <button type="button" class="btn btn-danger delete">삭제</button>
                 </td>
             </tr>
             </tbody>
@@ -68,7 +68,7 @@
 
         $('.delete').click(function () {
             $.ajax({
-                url: "http://localhost:8080/api/todos/" + $(this).val(),
+                url: "http://localhost:8080/api/todos/" + $(this).closest("tr").data("idx"),
                 type: "DELETE",
                 success: function () {
                     location.href = '/todo/list';
@@ -81,7 +81,7 @@
 
         $('.status').click(function () {
             $.ajax({
-                url: "http://localhost:8080/api/todos/" + $(this).val(),
+                url: "http://localhost:8080/api/todos/" + $(this).closest("tr").data("idx"),
                 type: "PUT",
                 contentType: "application/json",
                 dataType: "json",
@@ -99,7 +99,7 @@
                 description: $(this).html()
             });
             $.ajax({
-                url: "http://localhost:8080/api/todos/edit/" + $(this).data("idx"),
+                url: "http://localhost:8080/api/todos/edit/" + $(this).closest("tr").data("idx"),
                 type: "PUT",
                 data: jsonData,
                 contentType: "application/json",
@@ -112,6 +112,8 @@
                 }
             });
         });
+
+
     </script>
 </div>
 </body>

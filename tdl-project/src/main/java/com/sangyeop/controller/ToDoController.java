@@ -15,7 +15,7 @@ public class ToDoController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("todoList", toDoRepository.findAll());
+        model.addAttribute("todoList", toDoRepository.findAllByOrderByIdx());
         return "/todo/list";
     }
 
