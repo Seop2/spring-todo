@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>ToDo List</title>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>To Do List</h1>
+    </div>
+
+    <div class="form-group form-inline">
+        <input type="text" class="form-control" name="description" placeholder="오늘 할일" id="description" style="width: 35%">
+        <button type="button" class="btn btn-default" id="insert">등록</button>
+    </div>
+
+    <br/><br/><br/>
+
+    <div id="mainHide">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th class="col-md-6">내용</th>
+                <th class="col-md-1">작성 날짜</th>
+                <th class="col-md-1">완료 날짜</th>
+                <th class="col-md-1">삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="todo : ${todoList}">
+                <td th:if="${todo.status}" th:text="${todo.description}" style="text-decoration: line-through"></td>
+                <td th:if="!${todo.status}" th:text="${todo.description}" contenteditable="true" class="edit" th:data-idx="${todo.idx}"></td>
+                <td th:text="${todo.createdDate} ? ${#temporals.format(todo.createdDate,'yyyy-MM-dd')} : ${todo.createdDate}"></td>
+                <td th:text="${todo.completedDate} ? ${#temporals.format(todo.completedDate,'yyyy-MM-dd')} : ${todo.completedDate}"></td>
+                <td>
+                    <input type="checkbox" class="status" th:checked="${todo.status}" th:value="${todo.idx}">
+                    <button type="button" class="btn btn-danger delete" th:value="${todo.idx}">삭제</button>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <br/>
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script>
+        $('#insert').click(function () {
+            var jsonData = JSON.stringify({
+                description: $('#description').val()
+            });
+            $.ajax({
+                url: "http://localhost:8080/api/todos",
+                type: "POST",
+                data: jsonData,
+                contentType: "application/json",
+                dataType: "json",
+                success: function () {
+                    location.href = '/todo/list';
+                },
+                error: function () {
+                    alert('저장 실패!');
+                }
+            });
+        });
+
+        $('.delete').click(function () {
+            $.ajax({
+                url: "http://localhost:8080/api/todos/" + $(this).val(),
+                type: "DELETE",
+                success: function () {
+                    location.href = '/todo/list';
+                },
+                error: function () {
+                    alert('삭제 실패!');
+                }
+            });
+        });
+
+        $('.status').click(function () {
+            $.ajax({
+                url: "http://localhost:8080/api/todos/" + $(this).val(),
+                type: "PUT",
+                contentType: "application/json",
+                dataType: "json",
+                success: function () {
+                    location.href = '/todo/list';
+                },
+                error: function () {
+                    alert('수정 실패!');
+                }
+            });
+        });
+
+        $('.edit').blur(function() {
+            var jsonData = JSON.stringify({
+                description: $(this).html()
+            });
+            $.ajax({
+                url: "http://localhost:8080/api/todos/edit/" + $(this).data("idx"),
+                type: "PUT",
+                data: jsonData,
+                contentType: "application/json",
+                dataType: "json",
+                success: function () {
+                    location.href = '/todo/list';
+                },
+                error: function () {
+                    alert('수정 실패!');
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
