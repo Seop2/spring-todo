@@ -1,15 +1,15 @@
 package com.sangyeop.controller;
 
+import com.sangyeop.domain.ToDo;
 import com.sangyeop.domain.User;
 import com.sangyeop.repository.ToDoRepository;
 import com.sangyeop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -26,7 +26,6 @@ public class ToDoController {
 
     @PostMapping("/list")
     public String list(@RequestBody HashMap payload) {
-        System.out.println("진입");
         if (currentUser==null) {
             currentUser =  userRepository.findById(payload.get("id").toString());
         }
@@ -35,9 +34,47 @@ public class ToDoController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        System.out.println(currentUser.getId());
-        model.addAttribute("todoList", toDoRepository.findAllByOrderByIdx());
+        if (currentUser==null) {
+            return "login/form";
+        }
+        model.addAttribute("todoList", toDoRepository.findByUserOrderByIdx(currentUser));
         return "/todo/list";
     }
 
+    @PostMapping
+    public ResponseEntity<?> postToDo(@RequestBody ToDo toDo){
+        toDo.regist();
+        toDo.setUser(currentUser);
+        toDoRepository.save(toDo);
+        return new ResponseEntity<>("{}", HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{idx}")
+    public ResponseEntity<?> deleteToDo(@PathVariable("idx") Long idx) {
+        toDoRepository.deleteById(idx);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
+    }
+
+    @PutMapping("/{idx}")
+    public ResponseEntity<?> putToDo(@PathVariable("idx") Long idx) {
+        ToDo persistTodo = toDoRepository.getOne(idx);
+        persistTodo.update();
+        toDoRepository.save(persistTodo);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
+    }
+
+    @PutMapping("/edit/{idx}")
+    public ResponseEntity<?> putDescription(@PathVariable("idx") Long idx, @RequestBody ToDo toDo) {
+        String description = toDo.getDescription();
+        ToDo persistTodo = toDoRepository.getOne(idx);
+        persistTodo.edit(description);
+        toDoRepository.save(persistTodo);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
+    }
+
+    @GetMapping("/logout")
+    public String logout(){
+        currentUser = null;
+        return "login/form";
+    }
 }

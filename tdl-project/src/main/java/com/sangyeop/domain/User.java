@@ -7,6 +7,8 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table
@@ -28,11 +30,15 @@ public class User implements Serializable {
     @Column
     private String email;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<ToDo> toDos = new ArrayList<>();
+
     @Builder
-    public User(String id, String passsword, String email) {
+    public User(String id, String passsword, String email, List<ToDo> toDos) {
         this.id = id;
         this.passsword = passsword;
         this.email = email;
+        this.toDos = toDos;
     }
 
 }

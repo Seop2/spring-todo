@@ -6,6 +6,11 @@
     <title>ToDo List</title>
 </head>
 <body>
+
+<form class="pull-right" action="/todo/logout" method="get">
+    <button type="submit" class="btn btn-default" id="logout">logout</button>
+</form>
+
 <div class="container">
     <div class="page-header">
         <h1>To Do List</h1>
@@ -52,7 +57,7 @@
                 description: $('#description').val()
             });
             $.ajax({
-                url: "http://localhost:8080/api/todos",
+                url: "http://localhost:8080//todo",
                 type: "POST",
                 data: jsonData,
                 contentType: "application/json",
@@ -68,7 +73,7 @@
 
         $('.delete').click(function () {
             $.ajax({
-                url: "http://localhost:8080/api/todos/" + $(this).closest("tr").data("idx"),
+                url: "http://localhost:8080//todo/" + $(this).closest("tr").data("idx"),
                 type: "DELETE",
                 success: function () {
                     location.href = '/todo/list';
@@ -81,7 +86,7 @@
 
         $('.status').click(function () {
             $.ajax({
-                url: "http://localhost:8080/api/todos/" + $(this).closest("tr").data("idx"),
+                url: "http://localhost:8080//todo/" + $(this).closest("tr").data("idx"),
                 type: "PUT",
                 contentType: "application/json",
                 dataType: "json",
@@ -99,7 +104,7 @@
                 description: $(this).html()
             });
             $.ajax({
-                url: "http://localhost:8080/api/todos/edit/" + $(this).closest("tr").data("idx"),
+                url: "http://localhost:8080//todo/edit/" + $(this).closest("tr").data("idx"),
                 type: "PUT",
                 data: jsonData,
                 contentType: "application/json",
@@ -112,8 +117,6 @@
                 }
             });
         });
-
-
     </script>
 </div>
 </body>

@@ -29,15 +29,16 @@ public class ToDo implements Serializable {
     @Column
     private LocalDate completedDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Builder
-    public ToDo(String description, Boolean status, LocalDate createdDate, LocalDate completedDate) {
+    public ToDo(String description, Boolean status, LocalDate createdDate, LocalDate completedDate, User user) {
         this.description = description;
         this.status = status;
         this.createdDate = createdDate;
         this.completedDate = completedDate;
+        this.user = user;
     }
 
     public void regist() {

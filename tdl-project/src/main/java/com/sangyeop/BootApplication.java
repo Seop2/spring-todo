@@ -11,6 +11,9 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.time.LocalDate;
+import java.util.stream.IntStream;
+
 @SpringBootApplication
 public class BootApplication {
     public static void main(String[] args) {
@@ -27,9 +30,17 @@ public class BootApplication {
     }
 
     @Bean
-    public CommandLineRunner runner(UserRepository userRepository) throws Exception{
+    public CommandLineRunner runner(UserRepository userRepository, ToDoRepository toDoRepository) throws Exception {
         return args -> {
-            userRepository.save(User.builder().id("hagome").passsword("123456").email("hagome@gmail.com").build());
+            IntStream.rangeClosed(1, 100).forEach(index1 -> {
+                User user = userRepository.save(User.builder().id("admin" + index1).email("admin@test.com").passsword("123456").build());
+
+                IntStream.rangeClosed(1, 20).forEach(index2 -> {
+                    ToDo toDo = toDoRepository.save(ToDo.builder().description("유저 " + index1 + "번의 해야 할일" + index2).createdDate(LocalDate.now()).status(false).user(user).build());
+
+                });
+
+            });
         };
     }
 
