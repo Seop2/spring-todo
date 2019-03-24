@@ -1,7 +1,9 @@
 package com.sangyeop;
 
 import com.sangyeop.domain.ToDo;
+import com.sangyeop.domain.User;
 import com.sangyeop.repository.ToDoRepository;
+import com.sangyeop.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +26,11 @@ public class BootApplication {
         return registrationBean;
     }
 
-
+    @Bean
+    public CommandLineRunner runner(UserRepository userRepository) throws Exception{
+        return args -> {
+            userRepository.save(User.builder().id("hagome").passsword("123456").email("hagome@gmail.com").build());
+        };
+    }
 
 }

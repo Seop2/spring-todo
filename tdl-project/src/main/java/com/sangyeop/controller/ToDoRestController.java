@@ -2,6 +2,7 @@ package com.sangyeop.controller;
 
 import com.sangyeop.domain.ToDo;
 import com.sangyeop.repository.ToDoRepository;
+import com.sangyeop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,9 +16,13 @@ public class ToDoRestController {
     @Autowired
     ToDoRepository toDoRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     @PostMapping
     public ResponseEntity<?> postToDo(@RequestBody ToDo toDo){
         toDo.regist();
+        toDo.setUser(userRepository.findById("hagome"));
         toDoRepository.save(toDo);
         return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }

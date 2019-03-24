@@ -1,8 +1,6 @@
 package com.sangyeop.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Table
+@Setter
 public class ToDo implements Serializable {
     @Column
     @Id
@@ -29,6 +28,9 @@ public class ToDo implements Serializable {
 
     @Column
     private LocalDate completedDate;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @Builder
     public ToDo(String description, Boolean status, LocalDate createdDate, LocalDate completedDate) {
