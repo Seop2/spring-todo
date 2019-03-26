@@ -17,8 +17,9 @@
     </div>
 
     <div class="form-group form-inline">
-        <input type="text" class="form-control" name="description" placeholder="오늘 할일" id="description" style="width: 35%">
-        <button type="button" class="btn btn-default" id="insert">등록</button>
+            <input type="text" class="form-control" name="description" placeholder="오늘 할일" id="description"
+                   style="width: 35%">
+            <button type="button" class="btn btn-default" id="insert">등록</button>
     </div>
 
     <br/><br/><br/>
@@ -99,7 +100,7 @@
             });
         });
 
-        $('.edit').blur(function() {
+        $('.edit').blur(function () {
             var jsonData = JSON.stringify({
                 description: $(this).html()
             });

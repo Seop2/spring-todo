@@ -35,7 +35,7 @@ public class ToDoController {
     @GetMapping("/list")
     public String list(Model model) {
         if (currentUser==null) {
-            return "login/form";
+            return "redirect:/login/form";
         }
         model.addAttribute("todoList", toDoRepository.findByUserOrderByIdx(currentUser));
         return "/todo/list";
@@ -44,7 +44,7 @@ public class ToDoController {
     @PostMapping
     public ResponseEntity<?> postToDo(@RequestBody ToDo toDo){
         toDo.regist();
-        toDo.setUser(currentUser);
+        currentUser.add(toDo);
         toDoRepository.save(toDo);
         return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }
