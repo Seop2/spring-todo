@@ -30,8 +30,13 @@ public class User implements Serializable {
     @Column
     private String email;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<ToDo> toDos = new ArrayList<>();
+
+    public void add(ToDo toDo) {
+        this.toDos.add(toDo);
+        toDo.setUser(this);
+    }
 
     @Builder
     public User(String id, String passsword, String email, List<ToDo> toDos) {
