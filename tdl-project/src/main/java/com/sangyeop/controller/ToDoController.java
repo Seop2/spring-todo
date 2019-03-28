@@ -1,5 +1,6 @@
 package com.sangyeop.controller;
 
+import com.sangyeop.domain.SecurityUser;
 import com.sangyeop.domain.ToDo;
 import com.sangyeop.domain.User;
 import com.sangyeop.repository.ToDoRepository;
@@ -7,48 +8,44 @@ import com.sangyeop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
+/**
+ * @author hagome
+ * @since  2019-03-29
+ */
 @Controller
 @RequestMapping("/todo")
 public class ToDoController {
+
     @Autowired
     ToDoRepository toDoRepository;
 
     @Autowired
     UserRepository userRepository;
 
-    User currentUser;
-
-    @PostMapping("/list")
-    public String list(@RequestBody HashMap payload) {
-        if (currentUser==null) {
-            currentUser =  userRepository.findById(payload.get("id").toString());
-        }
-        return "/todo/list";
-    }
-
+    /* @AuthenticationPrincipal SecurityUser securityUser : 현재 로그인한 User 가져오기 */
     @GetMapping("/list")
-    public String list(Model model) {
-        if (currentUser==null) {
-            return "redirect:/login/form";
-        }
-        model.addAttribute("todoList", toDoRepository.findByUserOrderByIdx(currentUser));
+    public String list(Model model, @AuthenticationPrincipal SecurityUser securityUser) {
+        User user = userRepository.findById(securityUser.getUsername());
+        model.addAttribute("todoList", toDoRepository.findByUserOrderByIdx(user));
         return "/todo/list";
     }
 
+    /* 게시물 등록 */
     @PostMapping
-    public ResponseEntity<?> postToDo(@RequestBody ToDo toDo){
+    public ResponseEntity<?> postToDo(@RequestBody ToDo toDo, @AuthenticationPrincipal SecurityUser securityUser){
+        User user = userRepository.findById(securityUser.getUsername());
         toDo.regist();
-        currentUser.add(toDo);
+        user.add(toDo);
         toDoRepository.save(toDo);
         return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }
 
+    /* 게시물 삭제 */
     @DeleteMapping("/{idx}")
     public ResponseEntity<?> deleteToDo(@PathVariable("idx") Long idx) {
         toDoRepository.deleteById(idx);
@@ -72,9 +69,4 @@ public class ToDoController {
         return new ResponseEntity<>("{}", HttpStatus.OK);
     }
 
-    @GetMapping("/logout")
-    public String logout(){
-        currentUser = null;
-        return "login/form";
-    }
 }

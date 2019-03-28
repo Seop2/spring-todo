@@ -1,18 +1,11 @@
 package com.sangyeop;
 
-import com.sangyeop.domain.ToDo;
-import com.sangyeop.domain.User;
-import com.sangyeop.repository.ToDoRepository;
-import com.sangyeop.repository.UserRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.time.LocalDate;
-import java.util.stream.IntStream;
 
 @SpringBootApplication
 public class BootApplication {

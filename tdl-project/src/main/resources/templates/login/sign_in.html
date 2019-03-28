@@ -1,0 +1,33 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>Please Login</title>
+</head>
+<body>
+<div th:fragment="content">
+    <form name="f" th:action="@{/login/sign_in}" method="post">
+        <fieldset>
+            <legend class="text-center">Please Login</legend>
+            <div th:if="${param.error}" class="alert alert-error">
+                Invalid username and password.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success">
+                You have been logged out.
+            </div>
+
+            <div class="table-bordered" style="width: 30%; margin: auto; padding: 10px">
+                <label for="username">Username</label>
+                <input class="form-control" type="text" id="username" name="username"/>
+                <label for="password">Password</label>
+                <input class="form-control" type="password" id="password" name="password"/>
+                <button class="btn-block btn btn-success" type="submit" style="margin-top: 20px;">로그인</button>
+                <button class="btn-block btn btn-link" type="button" onclick="location.href='/login/sign_up'">회원가입</button>
+            </div>
+
+
+        </fieldset>
+    </form>
+</div>
+</body>
+</html>

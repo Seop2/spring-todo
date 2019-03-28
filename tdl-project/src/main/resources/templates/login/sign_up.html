@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <title>Sign Up</title>
+</head>
+
+<body>
+<div style="width: 30%; margin: auto;">
+    <h1 style="text-align: center">Sign up</h1>
+
+    <div class="table-bordered" style="padding: 10px">
+        <div class="form-group">
+            <label for="id">아이디</label>
+            <input class="form-control" id="id" type="text" placeholder="id" name="id">
+        </div>
+        <div class="form-group">
+            <label for="pw">비밀번호</label>
+            <input class="form-control" id="pw" type="password" placeholder="pw" name="pw">
+        </div>
+        <div class="form-group">
+            <label for="email">이메일 주소</label>
+            <input class="form-control" id="email" type="email" placeholder="email" name="email">
+        </div>
+        <button class="btn btn-success btn-block" id="sign_up">회원가입</button>
+    </div>
+
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+    $('#sign_up').click(function () {
+        var jsonData = JSON.stringify({
+            id: $('#id').val(),
+            pw: $('#pw').val(),
+            email: $('#email').val()
+        });
+        $.ajax({
+            url: "http://localhost:8080/login/sign_up",
+            type: "POST",
+            data: jsonData,
+            contentType: "application/json",
+            dataType: "json",
+            success: function () {
+                location.href = '/login/sign_in';
+            },
+            error: function (request) {
+                alert(request.responseText)
+            }
+        });
+    });
+</script>
+</body>
+</html>

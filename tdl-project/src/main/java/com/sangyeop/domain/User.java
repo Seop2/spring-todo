@@ -10,6 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author hagome
+ * @since  2019-03-29
+ */
 @Entity
 @Table
 @NoArgsConstructor
@@ -30,7 +34,7 @@ public class User implements Serializable {
     @Column
     private String email;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ToDo> toDos = new ArrayList<>();
 
     public void add(ToDo toDo) {
@@ -38,12 +42,16 @@ public class User implements Serializable {
         toDo.setUser(this);
     }
 
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="uid")
+    private List<UserRole> roles;
+
     @Builder
-    public User(String id, String passsword, String email, List<ToDo> toDos) {
+    public User(String id, String passsword, String email, List<ToDo> toDos, List<UserRole> roles) {
         this.id = id;
         this.passsword = passsword;
         this.email = email;
         this.toDos = toDos;
+        this.roles = roles;
     }
-
 }

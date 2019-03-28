@@ -6,6 +6,10 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+/**
+ * @author hagome
+ * @since  2019-03-29
+ */
 @NoArgsConstructor
 @Entity
 @Getter

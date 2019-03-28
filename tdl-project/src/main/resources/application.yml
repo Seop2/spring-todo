@@ -13,3 +13,8 @@ spring:
       enabled: true
   thymeleaf:
     cache: false
+
+server:
+  error:
+    whitelabel:
+      enabled: false
