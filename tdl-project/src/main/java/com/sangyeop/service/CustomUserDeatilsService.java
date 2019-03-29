@@ -1,6 +1,7 @@
 package com.sangyeop.service;
 
 import com.sangyeop.domain.SecurityUser;
+import com.sangyeop.domain.User;
 import com.sangyeop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +19,14 @@ public class CustomUserDeatilsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return Optional.ofNullable(userRepository.findById(username))
-                .filter(m -> m != null).map(m -> new SecurityUser(m)).get();
+        User user = userRepository.findById(username);
+
+//        존재하지 않는 사용자일 경우
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+
+        return new SecurityUser(user);
+
     }
 }

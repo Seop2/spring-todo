@@ -9,7 +9,7 @@
     <form name="f" th:action="@{/login/sign_in}" method="post">
         <fieldset>
             <legend class="text-center">Please Login</legend>
-            <div th:if="${param.error}" class="alert alert-error">
+            <div th:if="${param.error}" class="alert alert-danger text-center" style="width: 30%; margin: auto; padding: 10px">
                 Invalid username and password.
             </div>
             <div th:if="${param.logout}" class="alert alert-success">
