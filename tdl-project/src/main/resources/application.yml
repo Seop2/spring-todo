@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/todo_db?serverTimezone=Asia/Seoul
-    username: todo_user
-    password: 123456
+    username: #db_user
+    password: #db_pasword
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
