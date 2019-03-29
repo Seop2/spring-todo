@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class CustomErrorController implements ErrorController {
-
+    /* 404, 500 에러 페이지 커스터마이징 */
     @RequestMapping(value = "/error")
     public String handleError(HttpServletRequest request) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);

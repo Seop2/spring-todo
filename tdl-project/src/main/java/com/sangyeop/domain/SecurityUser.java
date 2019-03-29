@@ -19,6 +19,7 @@ public class SecurityUser extends User {
         super(user.getId(), user.getPasssword(), makeGrantedAuthority(user.getRoles()));
     }
 
+    /* User Role을  GrantedAuthority로 변경 */
     private static List<GrantedAuthority> makeGrantedAuthority(List<UserRole> roles){
         List<GrantedAuthority> list = new ArrayList<>();
         roles.forEach(role -> list.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getRoleName())));

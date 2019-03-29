@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class CustomLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    //페이지를 세션에 기억해서 로그인 후 해당 페이지로 이동
+    /* 페이지를 세션에 기억해서 로그인 후 해당 페이지로 이동 */
     public CustomLoginSuccessHandler(String defaultTargetUrl) {
         setDefaultTargetUrl(defaultTargetUrl);
     }
