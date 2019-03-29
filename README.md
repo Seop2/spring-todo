@@ -1,6 +1,6 @@
 # todo
 
-------
+---
 
 Spring Boot를 이용한 간단한 To Do List 웹 어플리케이션
 
@@ -56,139 +56,140 @@ annotationProcessor 'org.projectlombok:lombok'
 
 ------
 
-1. 프로젝트 생성
+### 1. 프로젝트 생성
+- Lombok, Jpa, Thymeleaf, Web, MySql 의존성 추가
+- Lombok plugin 설치
+- setting / 'Build, Excution, Deployment' / Compile / Annotaion Processors에 Enavle annotation processing check (해당 설정을 하지 않으면 Lombok 사용 시 오류 발생)
 
-   - Lombok, Jpa, Thymeleaf, Web, MySql 의존성 추가
-   - Lombok plugin 설치 후 setting / 'Build, Excution, Deployment' / Compile / Annotaion Processors에 Enavle annotation processing check (해당 설정을 하지 않으면 Lombok 사용 시 오류 발생)
+### 2. User와 ToDo 양방향 관계성 설정
 
-2. User와 ToDo 양방향 관계성 설정
+- User DAO
 
-   - User DAO
+```java
+public class User implements Serializable {
+   ...
+   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+   private List<ToDo> toDos = new ArrayList<>();
+   ...
+}
+```
 
-   ```java
-   public class User implements Serializable {
-       ...
-       @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-       private List<ToDo> toDos = new ArrayList<>();
-       ...
+ - ToDo DAO
+
+ ```java
+ public class ToDo implements Serializable {
+ 	...
+     @ManyToOne(fetch = FetchType.LAZY)
+     private User user;
+     ...
+ }
+ ```
+
+### 3. User, ToDo Repository 생성
+
+- UserRepository
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+   User findById(String id);
+}
+```
+
+- ToDoRepository
+
+```java
+public interface ToDoRepository extends JpaRepository<ToDo, Long> {
+   List<ToDo> findByUserOrderByIdx(User user);
+}
+```
+
+### 4. Spring Security 추가
+
+- SecurityConfig 구현 (상속 WebSecurityConfigurerAdapter)
+
+```java
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter { ... }
+```
+
+- Security 제외 패턴 등록 (in SecurityConfig )
+
+```java
+@Override
+public void configure(WebSecurity web) throws Exception {
+    web.ignoring().
+    antMatchers("/css/**", "/script/**", "image/**", "/fonts/**", "lib/**", "/js/**");
+}
+```
+
+- Security 설정 (in SecurityConfig)
+
+```java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    /* 인증 설정 및 필터 등록 */
+}
+```
+
+### 5. userdetails.User 를 상속받은 SecurityUser 객체 생성
+
+ - Spring Security에서 Custom User를 사용하기 위해서는 security의 User class를 상속 받아서 구현하거나, detailUser interface를 이용해 구현해야 한다.
+
+### 6. UserDeatileService interface를 구현한 CustomUserDetailsService 생성
+
+- loadUserByUsername (로그인 로직을 처리한다.)
+
+```java
+@Service
+public class CustomUserDeatilsService implements UserDetailsService {
+   @Autowired
+   UserRepository userRepository;
+
+   @Override
+   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+       User user = userRepository.findById(username);
+       if (user == null) {
+          throw new UsernameNotFoundException(username);
+       }
+       return new SecurityUser(user);
    }
-   ```
+}
+```
 
-   - ToDo DAO
+### 7. CustomLoginSuccessHandler 생성 (SavedRequestAwareAuthenticationSuccessHandler 상속)
 
-   ```java
-   public class ToDo implements Serializable {
-   	...
-       @ManyToOne(fetch = FetchType.LAZY)
-       private User user;
-       ...
-   }
-   ```
+- 권한 없는 페이지에 접속했을 때, 로그인페이지로 이동하고 인증을 거치면 이전 페이지로 이동되게 한다.
 
-3. User, ToDo Repository 생성
+### 8. ErrorController interface를 구현한 CustomErrorController 생성
 
-   - UserRepository
+- application.poolidentity에 server.error.whitelabel.enable=false (white label page 속성 변경)
+- 404 error, 500 error 를 custompage가 나타나게 한다.
 
-   ```java
-   public interface UserRepository extends JpaRepository<User, Long> {
-       User findById(String id);
-   }
-   ```
+```java
+@Controller
+public class CustomErrorController implements ErrorController {
+   @RequestMapping(value = "/error")
+   public String handleError(HttpServletRequest request) {
+       Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
-   - ToDoRepository
+       if (status != null) {
+           Integer statusCode = Integer.valueOf(status.toString());
 
-   ```java
-   public interface ToDoRepository extends JpaRepository<ToDo, Long> {
-       List<ToDo> findByUserOrderByIdx(User user);
-   }
-   ```
-
-4. Spring Security 추가
-   - SecurityConfig 구현 (상속 WebSecurityConfigurerAdapter)
-
-    ```java
-    @EnableWebSecurity
-    public class SecurityConfig extends WebSecurityConfigurerAdapter { ... }
-    ```
-
-    - Security 제외 패턴 등록 (in SecurityConfig )
-
-    ```java
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().
-        antMatchers("/css/**", "/script/**", "image/**", "/fonts/**", "lib/**", "/js/**");
-    }
-    ```
-
-    - Security 설정 (in SecurityConfig)
-
-    ```java
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        /* 인증 설정 및 필터 등록 */
-    }
-    ```
-
-5. userdetails.User 를 상속받은 SecurityUser 객체 생성
-
-  - Spring Security에서 Custom User를 사용하기 위해서는 security의 User class를 상속 받아서 구현하거나, detailUser interface를 이용해 구현해야 한다.
-
-6. UserDeatileService interface를 구현한 CustomUserDetailsService 생성
-
-   - loadUserByUsername (로그인 로직을 처리한다.)
-
-   ```java
-   @Service
-   public class CustomUserDeatilsService implements UserDetailsService {
-       @Autowired
-       UserRepository userRepository;
-   
-       @Override
-       public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-           User user = userRepository.findById(username);
-           if (user == null) {
-              throw new UsernameNotFoundException(username);
+           if(statusCode == HttpStatus.NOT_FOUND.value()) {
+               return "/errors/404";
            }
-           return new SecurityUser(user);
-       }
-   }
-   ```
-
-7. CustomLoginSuccessHandler 생성 (SavedRequestAwareAuthenticationSuccessHandler 상속)
-
-   - 권한 없는 페이지에 접속했을 때, 로그인페이지로 이동하고 인증을 거치면 이전 페이지로 이동되게 한다.
-
-8. ErrorController interface를 구현한 CustomErrorController 생성
-
-   - application.poolidentity에 server.error.whitelabel.enable=false (white label page 속성 변경)
-   - 404 error, 500 error 를 custompage가 나타나게 한다.
-
-   ```java
-   @Controller
-   public class CustomErrorController implements ErrorController {
-       @RequestMapping(value = "/error")
-       public String handleError(HttpServletRequest request) {
-           Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-   
-           if (status != null) {
-               Integer statusCode = Integer.valueOf(status.toString());
-   
-               if(statusCode == HttpStatus.NOT_FOUND.value()) {
-                   return "/errors/404";
-               }
-               else if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                   return "/errors/500";
-               }
+           else if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+               return "/errors/500";
            }
-           return "error";
        }
-       @Override
-       public String getErrorPath() {
-           return "/error";
-       }
+       return "error";
    }
-   ```
+   @Override
+   public String getErrorPath() {
+       return "/error";
+   }
+}
+```
 
 
 
