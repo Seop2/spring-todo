@@ -1,72 +1,55 @@
 package com.sangyeop.controller;
 
-import com.sangyeop.domain.User;
-import com.sangyeop.domain.UserRole;
-import com.sangyeop.repository.UserRepository;
+import com.sangyeop.domain.UserRequestDto;
+import com.sangyeop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Arrays;
-import java.util.Map;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author hagome
- * @since  2019-03-29
+ * @since 2019-03-29
  */
 @Controller
 @RequestMapping("/login")
 public class LoginController {
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
+    /* 로그인 페이지 */
     @GetMapping("/sign_in")
     public String getSignIn() {
         return "/login/sign_in";
     }
 
+    /* 회원가입 페이지 */
     @GetMapping("/sign_up")
     public String getSignUp() {
         return "/login/sign_up";
     }
 
+    /* 회원가입 유효성 검증 */
     @PostMapping("/sign_up")
-    public ResponseEntity<?> postSingUp(@RequestBody Map<String ,String> payload) {
-        /* 회원가입 예외처리 */
-        String  id = payload.get("id");
-        String  pw = payload.get("pw");
-        String  email = payload.get("email");
-
-        if (id == null || id.length()==0) {
-            return new ResponseEntity<>("아이디를 확인해 주세요", HttpStatus.FORBIDDEN);
+    public ResponseEntity<?> postSingUp(@RequestBody @Valid UserRequestDto userRequestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            StringBuilder errorMessages = new StringBuilder();
+            for (ObjectError error:errors) {
+                errorMessages.append(error.getDefaultMessage()).append("\n");
+            }
+            return new ResponseEntity<>(errorMessages.toString(), HttpStatus.BAD_REQUEST);
         }
-        if (pw == null || pw.length()==0) {
-            return new ResponseEntity<>("비밀번호가 너무 짧습니다.", HttpStatus.FORBIDDEN);
-        }
-        if (email ==null || email.length()==0) {
-            return new ResponseEntity<>("이메일을 확인해 주세요.", HttpStatus.FORBIDDEN);
-        }
-        if (userRepository.findById(id) != null) {
-            return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.FORBIDDEN);
-        }
-        /* 회원가입 예외처리 END */
-
-
-        /* 회원가입 성공 */
-        UserRole role = new UserRole();
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        role.setRoleName("BASIC");
-        User user = User.builder()
-                .id(id)
-                .passsword(passwordEncoder.encode(pw))
-                .email(email)
-                .roles(Arrays.asList(role))
-                .build();
-        userRepository.save(user);
-        return new ResponseEntity<>("{}", HttpStatus.CREATED);
+        return new ResponseEntity<>("{}",HttpStatus.CREATED);
     }
-
 }
+
