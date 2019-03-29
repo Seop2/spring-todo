@@ -49,6 +49,7 @@ public class LoginController {
             }
             return new ResponseEntity<>(errorMessages.toString(), HttpStatus.BAD_REQUEST);
         }
+        userService.save(userRequestDto);
         return new ResponseEntity<>("{}",HttpStatus.CREATED);
     }
 }
