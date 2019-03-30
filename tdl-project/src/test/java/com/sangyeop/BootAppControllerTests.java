@@ -1,13 +1,18 @@
 package com.sangyeop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sangyeop.controller.LoginController;
 import com.sangyeop.domain.UserRequestDto;
+import com.sangyeop.domain.UserRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -18,11 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * @author hagome
- * @since  2019-03-30
+ * @since 2019-03-30
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
-public class BootAppControllerTestsTests {
+@SpringBootTest(classes = BootApplication.class)
+public class BootAppControllerTests {
 
     @Autowired
     ObjectMapper objectMapper;
@@ -65,5 +70,5 @@ public class BootAppControllerTestsTests {
                 .content(objectMapper.writeValueAsString(userRequestDto)))
                 .andExpect(status().isCreated());
     }
-
+    
 }
