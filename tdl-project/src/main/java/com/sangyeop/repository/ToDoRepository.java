@@ -12,4 +12,5 @@ import java.util.List;
  */
 public interface ToDoRepository extends JpaRepository<ToDo, Long> {
     List<ToDo> findByUserOrderByIdx(User user);
+    ToDo findByIdx(Long idx);
 }

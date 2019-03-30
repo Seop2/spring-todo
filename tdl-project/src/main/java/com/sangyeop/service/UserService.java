@@ -20,7 +20,7 @@ public class UserService {
     UserRepository userRepository;
 
     /* 유효성이 인증된 User 생성 */
-    public void save(UserRequestDto userRequestDto) {
+    public User save(UserRequestDto userRequestDto) {
         String id = userRequestDto.getId();
         String pw = userRequestDto.getPw();
         String email = userRequestDto.getEmail();
@@ -33,6 +33,6 @@ public class UserService {
                 .email(email)
                 .roles(Arrays.asList(role))
                 .build();
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }
