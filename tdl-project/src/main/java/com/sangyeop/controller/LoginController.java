@@ -1,20 +1,15 @@
 package com.sangyeop.controller;
 
-import com.sangyeop.domain.UserRequestDto;
+import com.sangyeop.domain.User;
 import com.sangyeop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * @author hagome
@@ -38,18 +33,10 @@ public class LoginController {
         return "/login/sign_up";
     }
 
-    /* 회원가입 유효성 검증 */
+    // TODO: 2019-04-01 회원가입 유효성 검사 
     @PostMapping("/sign_up")
-    public ResponseEntity<?> postSingUp(@RequestBody @Valid UserRequestDto userRequestDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<ObjectError> errors = bindingResult.getAllErrors();
-            StringBuilder errorMessages = new StringBuilder();
-            for (ObjectError error:errors) {
-                errorMessages.append(error.getDefaultMessage()).append("\n");
-            }
-            return new ResponseEntity<>(errorMessages.toString(), HttpStatus.BAD_REQUEST);
-        }
-        userService.save(userRequestDto);
+    public ResponseEntity<?> postSingUp(@RequestBody User user) {
+        userService.save(user);
         return new ResponseEntity<>("{}",HttpStatus.CREATED);
     }
 }

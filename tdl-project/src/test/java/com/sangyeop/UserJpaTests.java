@@ -14,11 +14,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 
 /**
  * @author hagome
@@ -41,15 +39,13 @@ public class UserJpaTests {
         role.setRoleName("BASIC");
 
         User genericUser = userRepository.save(User.builder().id("testUser")
-                .passsword(passwordEncoder.encode("password")).email("test@gmail.com").roles(Arrays.asList(role)).build());
+                .pw(passwordEncoder.encode("password")).email("test@gmail.com").roles(Arrays.asList(role)).build());
         User foundUser = userRepository.findById(genericUser.getId());
         assertThat(foundUser.getIdx(), is(genericUser.getIdx()));
         assertThat(foundUser.getId(), is(genericUser.getId()));
-        assertThat(foundUser.getPasssword(), is(genericUser.getPasssword()));
+        assertThat(foundUser.getPw(), is(genericUser.getPw()));
         assertThat(foundUser.getEmail(), is(genericUser.getEmail()));
-        // TODO: 2019-03-30 AssertTath Role Error Handling
-        /* Error 발생 */
-//        assertThat(foundUser.getRoles(),is(genericUser.getRoles()));
+        assertThat(foundUser.getRoles().toString(),is(genericUser.getRoles().toString()));
     }
 
     /* todoRepository 테스트 */

@@ -55,7 +55,7 @@ public class ToDo implements Serializable {
         this.completedDate = this.status ? LocalDate.now() : null;
     }
 
-    public void edit(String description) {
+    public void switchStatus(String description) {
         this.description = description;
     }
 }

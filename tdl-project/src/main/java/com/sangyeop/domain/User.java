@@ -1,9 +1,6 @@
 package com.sangyeop.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,6 +15,7 @@ import java.util.List;
 @Table
 @NoArgsConstructor
 @Getter
+@Setter
 @ToString
 public class User implements Serializable {
     @Id
@@ -29,7 +27,7 @@ public class User implements Serializable {
     private String id;
 
     @Column
-    private String passsword;
+    private String pw;
 
     @Column
     private String email;
@@ -47,9 +45,9 @@ public class User implements Serializable {
     private List<UserRole> roles;
 
     @Builder
-    public User(String id, String passsword, String email, List<ToDo> toDos, List<UserRole> roles) {
+    public User(String id, String pw, String email, List<ToDo> toDos, List<UserRole> roles) {
         this.id = id;
-        this.passsword = passsword;
+        this.pw = pw;
         this.email = email;
         this.toDos = toDos;
         this.roles = roles;

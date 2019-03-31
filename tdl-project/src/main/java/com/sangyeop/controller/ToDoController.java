@@ -1,6 +1,5 @@
 package com.sangyeop.controller;
 
-import com.sangyeop.domain.SecurityUser;
 import com.sangyeop.domain.ToDo;
 import com.sangyeop.domain.User;
 import com.sangyeop.repository.ToDoRepository;
@@ -29,16 +28,16 @@ public class ToDoController {
 
     /* @AuthenticationPrincipal SecurityUser securityUser : 현재 로그인한 User 가져오기 */
     @GetMapping("/list")
-    public String list(Model model, @AuthenticationPrincipal SecurityUser securityUser) {
-        User user = userRepository.findById(securityUser.getUsername());
+    public String list(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User sessionUser) {
+        User user = userRepository.findById(sessionUser.getUsername());
         model.addAttribute("todoList", toDoRepository.findByUserOrderByIdx(user));
         return "/todo/list";
     }
 
     /* 게시물 등록 */
     @PostMapping
-    public ResponseEntity<?> postToDo(@RequestBody ToDo toDo, @AuthenticationPrincipal SecurityUser securityUser){
-        User user = userRepository.findById(securityUser.getUsername());
+    public ResponseEntity<?> postToDo(@RequestBody ToDo toDo, @AuthenticationPrincipal org.springframework.security.core.userdetails.User sessionUser){
+        User user = userRepository.findById(sessionUser.getUsername());
         toDo.regist();
         user.add(toDo);
         toDoRepository.save(toDo);
@@ -64,7 +63,7 @@ public class ToDoController {
     public ResponseEntity<?> putDescription(@PathVariable("idx") Long idx, @RequestBody ToDo toDo) {
         String description = toDo.getDescription();
         ToDo persistTodo = toDoRepository.getOne(idx);
-        persistTodo.edit(description);
+        persistTodo.switchStatus(description);
         toDoRepository.save(persistTodo);
         return new ResponseEntity<>("{}", HttpStatus.OK);
     }

@@ -1,7 +1,7 @@
 package com.sangyeop.config;
 
 import com.sangyeop.handler.CustomLoginSuccessHandler;
-import com.sangyeop.service.CustomUserDeatilsService;
+import com.sangyeop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /* CustomUser */
     @Autowired
-    CustomUserDeatilsService customUserDeatilsService;
+    UserService userService;
 
     /* Password Encoder 등록 */
     @Bean
@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /* 인증방식 */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDeatilsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 
     /* Security 제외 패턴 */
