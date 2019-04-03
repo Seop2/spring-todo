@@ -14,10 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author hagome
@@ -44,7 +44,7 @@ public class LoginControllerTests {
 
     /* 로그인 페이지 GET 테스팅 */
     @Test
-    public void testGetSign_in() throws Exception {
+    public void testGetSignIn() throws Exception {
         mockMvc.perform(get("/login/sign_up")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -52,7 +52,7 @@ public class LoginControllerTests {
 
     /* 회원가입 페이지 GET 테스팅 */
     @Test
-    public void testGetSign_up() throws Exception {
+    public void testGetSignUp() throws Exception {
         mockMvc.perform(get("/login/sign_in")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -64,7 +64,7 @@ public class LoginControllerTests {
         User user = new User();
         user.setId("test");
         user.setPw("password");
-        user.setEmail("Test@gmail.com");
+        user.setEmail("test@gmail.com");
 
         this.mockMvc.perform(post("/login/sign_up")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,6 +72,48 @@ public class LoginControllerTests {
                 .andExpect(status().isCreated());
 
         assertNotNull(userRepository.findById("test"));
+    }
+
+    /* 회원가입 유효성 테스트(ID 미입력) */
+    @Test
+    public void testPostSignUpValidID() throws Exception{
+        User user = new User();
+        user.setId("");
+        user.setPw("password");
+        user.setEmail("test@gmail.com");
+
+        this.mockMvc.perform(post("/login/sign_up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+    /* 회원가입 유효성 테스트(PW 미입력) */
+    @Test
+    public void testPostSignUpValidPW() throws Exception{
+        User user = new User();
+        user.setId("test");
+        user.setPw("");
+        user.setEmail("test@gmail.com");
+
+        this.mockMvc.perform(post("/login/sign_up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+    /* 회원가입 유효성 테스트(E-mail BAD format) */
+    @Test
+    public void testPostSignUpValidEmail() throws Exception{
+        User user = new User();
+        user.setId("test");
+        user.setPw("password");
+        user.setEmail("@gmail.com");
+
+        this.mockMvc.perform(post("/login/sign_up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
     }
     
 }
