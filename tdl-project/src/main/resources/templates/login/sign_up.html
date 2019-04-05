@@ -3,51 +3,94 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/form.css" rel="stylesheet">
+    <link href="/css/form.css" rel="stylesheet" type="text/css">
     <title>Sign Up</title>
 </head>
 
 <body>
-    <h1 style="text-align: center">Sign up</h1>
+<h1 style="text-align: center">Sign up</h1>
 
-    <div class="table-bordered my-form">
-        <div class="form-group">
-            <label for="id">Username</label>
-            <input class="form-control" id="id" type="text" placeholder="username" name="id">
-        </div>
-        <div class="form-group">
-            <label for="pw">Password</label>
-            <input class="form-control" id="pw" type="password" placeholder="password" name="pw">
-        </div>
-        <div class="form-group">
-            <label for="email">E-mail</label>
-            <input class="form-control" id="email" type="email" placeholder="e-mail" name="email">
-        </div>
-        <button class="btn btn-success btn-block" id="sign_up">회원가입</button>
+<div class="table-bordered my-form">
+    <div class="form-group">
+        <label for="id">Username</label>
+        <input class="form-control" id="id" type="text" placeholder="username" name="id">
+        <p class="valid" id="valid_id"></p>
     </div>
+    <div class="form-group">
+        <label for="pw">Password</label>
+        <input class="form-control" id="pw" type="password" placeholder="password" name="pw">
+        <p class="valid" id="valid_pw"></p>
+    </div>
+    <div class="form-group">
+        <label for="email">E-mail</label>
+        <input class="form-control" id="email" type="email" placeholder="e-mail" name="email">
+        <p class="valid" id="valid_email"></p>
+    </div>
+    <button class="btn btn-success btn-block" id="sign_up">회원가입</button>
+</div>
 
 
 <script th:src="@{/js/jquery.min.js}"></script>
 <script>
     $('#sign_up').click(function () {
-        var jsonData = JSON.stringify({
-            id: $('#id').val(),
-            pw: $('#pw').val(),
-            email: $('#email').val()
-        });
-        $.ajax({
-            url: "http://localhost:8080/login/sign_up",
-            type: "POST",
-            data: jsonData,
-            contentType: "application/json",
-            dataType: "json",
-            success: function () {
-                location.href = '/login/sign_in';
-            },
-            error: function (request) {
-                alert(request.responseText)
-            }
-        });
+
+        var valid_id = $('#id').val().length < 5;
+        var valid_pw = $('#pw').val().length < 8;
+        var exptext = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+        var valid_email = exptext.test($('#email').val())==false;
+
+        if (valid_id || valid_pw || valid_email) {
+            alert("양식을 다시 확인해 주세요");
+        } else {
+            var jsonData = JSON.stringify({
+                id: $('#id').val(),
+                pw: $('#pw').val(),
+                email: $('#email').val()
+            });
+            $.ajax({
+                url: "http://localhost:8080/login/sign_up",
+                type: "POST",
+                data: jsonData,
+                contentType: "application/json",
+                dataType: "json",
+                success: function () {
+                    location.href = '/login/sign_in';
+                },
+                error: function (request) {
+                    alert(request.responseText)
+                }
+            });
+        }
+    });
+
+    $('#id').keyup(function () {
+        if ($(this).val().length < 5) {
+            $('#valid_id').text("아이디가 너무 짧습니다.");
+            $('#valid_id').show();
+        } else {
+            $('#valid_id').hide();
+            $('#valid_id').text("");
+        }
+    });
+
+    $('#pw').keyup(function () {
+        if ($(this).val().length < 8) {
+            $('#valid_pw').show();
+            $('#valid_pw').text("비밀번호가 너무 짧습니다.");
+        } else {
+            $('#valid_pw').hide();
+        }
+    });
+
+    $('#email').keyup(function () {
+        var email = $(this).val();
+        var exptext = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+        if (exptext.test(email) == false) {
+            $('#valid_email').show();
+            $('#valid_email').text("이메일 형식이 맞지 않습니다.");
+        } else {
+            $('#valid_email').hide();
+        }
     });
 </script>
 </body>

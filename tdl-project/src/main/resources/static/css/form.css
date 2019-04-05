@@ -1,5 +1,13 @@
 .my-form {
     width: 30%;
     margin: auto;
-    padding: 10px
+    padding: 10px;
+}
+
+.valid {
+    padding-left: 10px;
+    padding-top: 10px;
+    color: red;
+    font-size: 10px;
+    display: none;
 }
