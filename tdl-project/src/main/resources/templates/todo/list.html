@@ -29,6 +29,7 @@
                 <th class="col-md-6">내용</th>
                 <th class="col-md-1">작성 날짜</th>
                 <th class="col-md-1">완료 날짜</th>
+                <th class="col-md-1">완료</th>
                 <th class="col-md-1">삭제</th>
             </tr>
             </thead>
@@ -38,8 +39,8 @@
                 <td th:if="!${todo.status}" th:text="${todo.description}" contenteditable="true" class="edit"></td>
                 <td th:text="${todo.createdDate} ? ${#temporals.format(todo.createdDate,'yyyy-MM-dd')} : ${todo.createdDate}"></td>
                 <td th:text="${todo.completedDate} ? ${#temporals.format(todo.completedDate,'yyyy-MM-dd')} : ${todo.completedDate}"></td>
+                <td><input type="checkbox" class="status" th:checked="${todo.status}"></td>
                 <td>
-                    <input type="checkbox" class="status" th:checked="${todo.status}">
                     <button type="button" class="btn btn-danger delete">삭제</button>
                 </td>
             </tr>

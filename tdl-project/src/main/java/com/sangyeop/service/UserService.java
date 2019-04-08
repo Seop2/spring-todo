@@ -36,6 +36,7 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(user.getId(), user.getPw(), list);
     }
 
+    /* 유저를 DB에 저장 */
     public User save(User user) {
         UserRole role = new UserRole();
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -43,5 +44,10 @@ public class UserService implements UserDetailsService {
         user.setPw(passwordEncoder.encode(user.getPw()));
         user.setRoles(Arrays.asList(role));
         return userRepository.save(user);
+    }
+
+    /* 아이디 중복 확인 */
+    public boolean isPresentUser(String id) {
+        return userRepository.findById(id)!=null;
     }
 }

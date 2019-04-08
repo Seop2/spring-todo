@@ -73,9 +73,9 @@ public class ToDoControllerTests {
     @Test
     @WithMockUser("admin")
     public void postToDo() throws Exception {
+//        TODO: 2019-04-01 오류 발생
 //        ToDo toDo = new ToDo();
 //        toDo.setDescription("첫번째 게시글");
-//        // TODO: 2019-04-01 오류 발생
 //        this.mockMvc.perform(post("/todo/list")
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content(objectMapper.writeValueAsString(toDo)))

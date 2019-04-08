@@ -11,7 +11,7 @@
         <fieldset>
             <legend class="text-center">Please Login</legend>
             <div th:if="${param.error}" class="alert alert-danger text-center" style="width: 30%; margin: auto; padding: 10px">
-                Invalid username and password.
+                아이디 비밀번호를 확인해 주세요.
             </div>
             <div th:if="${param.logout}" class="alert alert-success">
                 You have been logged out.
@@ -19,9 +19,9 @@
 
             <div class="table-bordered my-form">
                 <label for="username">Username</label>
-                <input class="form-control" type="text" id="username" name="username"/>
+                <input class="form-control" type="text" id="username" name="username" placeholder="username"/>
                 <label for="password">Password</label>
-                <input class="form-control" type="password" id="password" name="password"/>
+                <input class="form-control" type="password" id="password" name="password" placeholder="password"/>
                 <button class="btn-block btn btn-success" type="submit" style="margin-top: 20px;">로그인</button>
                 <button class="btn-block btn btn-link" type="button" onclick="location.href='/login/sign_up'">회원가입</button>
             </div>

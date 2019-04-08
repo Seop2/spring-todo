@@ -32,14 +32,42 @@
 
 <script th:src="@{/js/jquery.min.js}"></script>
 <script>
-    $('#sign_up').click(function () {
+    var is_present_id = false;
+    $('#id').blur(function () {
+        if ($(this).val().length < 5)
+            return ;
+        var jsonData = JSON.stringify({
+            id: $('#id').val()
+        });
+        var valid_id = $('#valid_id');
+        $.ajax({
+            url: "http://localhost:8080/login/sign_up/valid_id",
+            type: "POST",
+            data: jsonData,
+            contentType: "application/json",
+            dataType: "json",
+            success: function () {
+                is_present_id = false;
+                valid_id.text("멋진 아이디 입니다.!");
+                valid_id.show();
+                valid_id.css("color" , "GREEN");
+            },
+            error: function () {
+                is_present_id = true;
+                valid_id.text("이미 존재하는 아이디 입니다.");
+                valid_id.show();
+                valid_id.css("color" , "RED")
+            }
+        })
+    });
 
+    $('#sign_up').click(function () {
         var valid_id = $('#id').val().length < 5;
         var valid_pw = $('#pw').val().length < 8;
         var exptext = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
-        var valid_email = exptext.test($('#email').val())==false;
+        var valid_email = exptext.test($('#email').val()) == false;
 
-        if (valid_id || valid_pw || valid_email) {
+        if (valid_id || valid_pw || valid_email || is_present_id) {
             alert("양식을 다시 확인해 주세요");
         } else {
             var jsonData = JSON.stringify({
@@ -64,12 +92,14 @@
     });
 
     $('#id').keyup(function () {
+        var valid_id = $('#valid_id');
         if ($(this).val().length < 5) {
-            $('#valid_id').text("아이디가 너무 짧습니다.");
-            $('#valid_id').show();
+            valid_id.text("아이디가 너무 짧습니다.");
+            valid_id.css('color', 'RED');
+            valid_id.show();
         } else {
-            $('#valid_id').hide();
-            $('#valid_id').text("");
+            valid_id.hide();
+            valid_id.text("");
         }
     });
 
