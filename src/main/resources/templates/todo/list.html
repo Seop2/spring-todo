@@ -7,51 +7,66 @@
 </head>
 <body>
 
-<button class="pull-right btn btn-default" onclick="location.href='/logout'" id="logout">logout</button>
 
-<div class="container">
-    <div class="page-header">
-        <h1>To Do List</h1>
+<div class="container" style="border-radius: 20px; border-color: pink; border-style: solid">
+    <div class="page-header" style="background: pink; color: white; padding: 20px; border-radius: 20px">
+        <h1 class="text-center">TO DO List</h1>
     </div>
 
-    <div class="form-group form-inline">
+    <hr>
+
+    <button class="pull-right btn btn-default" onclick="location.href='/logout'" id="logout">logout</button>
+    <br>
+
+    <div class="form-group form-inline text-center" style="margin: auto">
         <input type="text" class="form-control" name="description" placeholder="오늘 할일" id="description"
-               style="width: 35%">
+               style="width: 50%">
         <button type="button" class="btn btn-default" id="insert">등록</button>
     </div>
 
     <br/><br/><br/>
 
-    <div id="mainHide">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th class="col-md-6">내용</th>
-                <th class="col-md-1">작성 날짜</th>
-                <th class="col-md-1">완료 날짜</th>
-                <th class="col-md-1">완료</th>
-                <th class="col-md-1">삭제</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="todo : ${todoList}" th:data-idx="${todo.idx}">
-                <td th:if="${todo.status}" th:text="${todo.description}" style="text-decoration: line-through"></td>
-                <td th:if="!${todo.status}" th:text="${todo.description}" contenteditable="true" class="edit"></td>
-                <td th:text="${todo.createdDate} ? ${#temporals.format(todo.createdDate,'yyyy-MM-dd')} : ${todo.createdDate}"></td>
-                <td th:text="${todo.completedDate} ? ${#temporals.format(todo.completedDate,'yyyy-MM-dd')} : ${todo.completedDate}"></td>
-                <td><input type="checkbox" class="status" th:checked="${todo.status}"></td>
-                <td>
+    <div th:each="todo : ${todoList}" th:data-idx="${todo.idx}"
+         style="width: 90%; height: auto; margin: 15px auto; padding: 20px; border-radius: 10px; background: pink; color: white">
+        <div>
+            <div>
+                <div th:if="${todo.status}" th:text="${todo.description}" style="font-size: 25px; text-decoration: line-through"></div>
+                <div th:if="!${todo.status}" th:text="${todo.description}" class="edit" contenteditable="true" style="font-size: 30px; display: inline-block"></div>
+                <div style="float: right;">
+                    <button type="button" class="btn btn-info show_reply">댓글</button>
+                    <button type="button" class="btn btn-primary edit_description">수정</button>
+                    <button type="button" class="btn btn-success complete">완료</button>
                     <button type="button" class="btn btn-danger delete">삭제</button>
-                </td>
-            </tr>
-            </tbody>
-
-        </table>
+                </div>
+            </div>
+            <div>
+                <span th:text="${todo.createdDate} ? ${#temporals.format(todo.createdDate,'yyyy-MM-dd')} : ${todo.createdDate}"></span>
+            </div>
+            <div class="replies" style="margin: auto; display: none;">
+                <hr>
+                <ul>
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                    <li>4</li>
+                </ul>
+                <div class="form-group form-inline" style="margin: auto;">
+                    <input type="text" class="form-control" name="description" placeholder="댓글" id="input_reply"
+                           style="width: 35%">
+                    <button type="button" class="btn btn-default" id="list_insert">등록</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <br/>
 
     <script th:src="@{/js/jquery.min.js}"></script>
     <script>
+        $('.show_reply').click(function () {
+            var list = $(this).parent().parent().parent().parent().find('.replies');
+            console.log(list);
+            list.slideToggle('slow');
+        });
+
         $('#insert').click(function () {
             var jsonData = JSON.stringify({
                 description: $('#description').val()
@@ -73,7 +88,7 @@
 
         $('.delete').click(function () {
             $.ajax({
-                url: "http://localhost:8080/todo/" + $(this).closest("tr").data("idx"),
+                url: "http://localhost:8080/todo/" + $(this).parent().parent().parent().parent().data("idx"),
                 type: "DELETE",
                 success: function () {
                     location.href = '/todo/list';
@@ -84,9 +99,9 @@
             });
         });
 
-        $('.status').click(function () {
+        $('.complete').click(function () {
             $.ajax({
-                url: "http://localhost:8080/todo/" + $(this).closest("tr").data("idx"),
+                url: "http://localhost:8080/todo/" + $(this).parent().parent().parent().parent().data("idx"),
                 type: "PUT",
                 contentType: "application/json",
                 dataType: "json",
@@ -99,12 +114,18 @@
             });
         });
 
+        $('.edit_description').click(function () {
+
+        });
+
         $('.edit').blur(function () {
+            console.log("등장");
             var jsonData = JSON.stringify({
                 description: $(this).html()
             });
+            var idx = $(this).parent().parent().parent().data("idx");
             $.ajax({
-                url: "http://localhost:8080/todo/edit/" + $(this).closest("tr").data("idx"),
+                url: "http://localhost:8080/todo/edit/" + idx,
                 type: "PUT",
                 data: jsonData,
                 contentType: "application/json",
