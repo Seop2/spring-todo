@@ -5,6 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author hagome
@@ -36,13 +38,17 @@ public class ToDo implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @OneToMany(mappedBy = "toDo")
+    private List<Comment> comments = new ArrayList<>();
+
     @Builder
-    public ToDo(String description, Boolean status, LocalDate createdDate, LocalDate completedDate, User user) {
+    public ToDo(String description, Boolean status, LocalDate createdDate, LocalDate completedDate, User user, List<Comment> comments) {
         this.description = description;
         this.status = status;
         this.createdDate = createdDate;
         this.completedDate = completedDate;
         this.user = user;
+        this.comments = comments;
     }
 
     public void regist() {
@@ -53,6 +59,11 @@ public class ToDo implements Serializable {
     public void update() {
         this.status = !this.getStatus();
         this.completedDate = this.status ? LocalDate.now() : null;
+    }
+
+    public void add(Comment comment){
+        this.comments.add(comment);
+        comment.setToDo(this);
     }
 
     public void switchStatus(String description) {

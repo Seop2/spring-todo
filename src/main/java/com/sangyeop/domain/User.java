@@ -43,14 +43,14 @@ public class User implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ToDo> toDos = new ArrayList<>();
 
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="uid")
+    private List<UserRole> roles;
+
     public void add(ToDo toDo) {
         this.toDos.add(toDo);
         toDo.setUser(this);
     }
-
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="uid")
-    private List<UserRole> roles;
 
     @Builder
     public User(String id, String pw, String email, List<ToDo> toDos, List<UserRole> roles) {

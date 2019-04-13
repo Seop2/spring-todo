@@ -30,8 +30,10 @@
          style="width: 90%; height: auto; margin: 15px auto; padding: 20px; border-radius: 10px; background: pink; color: white">
         <div>
             <div>
-                <div th:if="${todo.status}" th:text="${todo.description}" style="font-size: 25px; text-decoration: line-through"></div>
-                <div th:if="!${todo.status}" th:text="${todo.description}" class="edit" contenteditable="true" style="font-size: 30px; display: inline-block"></div>
+                <div th:if="${todo.status}" th:text="${todo.description}"
+                     style="font-size: 25px; text-decoration: line-through"></div>
+                <div th:if="!${todo.status}" th:text="${todo.description}" class="edit"
+                     style="font-size: 30px; display: inline-block"></div>
                 <div style="float: right;">
                     <button type="button" class="btn btn-info show_reply">댓글</button>
                     <button type="button" class="btn btn-primary edit_description">수정</button>
@@ -44,16 +46,13 @@
             </div>
             <div class="replies" style="margin: auto; display: none;">
                 <hr>
-                <ul>
-                    <li>1</li>
-                    <li>2</li>
-                    <li>3</li>
-                    <li>4</li>
+                <ul class="comment_list" data-test="test">
+                    <li th:each="comment : ${todo.comments}" th:text="${comment.content}"></li>
                 </ul>
                 <div class="form-group form-inline" style="margin: auto;">
-                    <input type="text" class="form-control" name="description" placeholder="댓글" id="input_reply"
+                    <input type="text" class="form-control input_reply" name="description" placeholder="댓글"
                            style="width: 35%">
-                    <button type="button" class="btn btn-default" id="list_insert">등록</button>
+                    <button type="button" th:value="${todo.idx}" class="btn btn-default list_insert">등록</button>
                 </div>
             </div>
         </div>
@@ -63,7 +62,6 @@
     <script>
         $('.show_reply').click(function () {
             var list = $(this).parent().parent().parent().parent().find('.replies');
-            console.log(list);
             list.slideToggle('slow');
         });
 
@@ -114,30 +112,60 @@
             });
         });
 
-        $('.edit_description').click(function () {
-
-        });
-
-        $('.edit').blur(function () {
-            console.log("등장");
+        $('.list_insert').click(function () {
+            var idx = $(this).val();
+            var text = $(this).parent().find('.input_reply');
+            var ul = $(this).parent().parent().find('ul');
             var jsonData = JSON.stringify({
-                description: $(this).html()
+                content: text.val()
             });
-            var idx = $(this).parent().parent().parent().data("idx");
             $.ajax({
-                url: "http://localhost:8080/todo/edit/" + idx,
-                type: "PUT",
+                url: "http://localhost:8080/comment/" + idx,
+                type: "POST",
                 data: jsonData,
                 contentType: "application/json",
                 dataType: "json",
                 success: function () {
-                    location.href = '/todo/list';
+                    var comment = document.createElement('li');
+                    var comment_text = document.createTextNode(text.val());
+                    comment.appendChild(comment_text);
+                    ul.append(comment);
+                    text.val('')
+                    text.focus();
                 },
                 error: function () {
-                    alert('수정 실패!');
+                    alert('등록 실패!');
                 }
             });
         });
+
+        $('.edit_description').click(function () {
+            var description = $(this).parent().parent().find('.edit');
+            description.attr('contenteditable', 'true');
+            description.trigger('focus');
+            var idx = $(this).parent().parent().parent().parent().data('idx');
+
+            $('.edit_description').click(function () {
+                var jsonData = JSON.stringify({
+                    description: description.text()
+                });
+                $.ajax({
+                    url: "http://localhost:8080/todo/edit/" + idx,
+                    type: "PUT",
+                    data: jsonData,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function () {
+                        location.href = '/todo/list';
+                    },
+                    error: function () {
+                        alert('수정 실패!');
+                    }
+                });
+            });
+        });
+
+
     </script>
 </div>
 </body>
