@@ -2,7 +2,9 @@
 
 ---
 
-Spring Boot를 이용한 간단한 To Do List 웹 어플리케이션
+* Spring Boot를 이용한 간단한 To Do List 웹 어플리케이션
+* ToDo List를 이용한 Web MVC 패턴 연습
+* Test Code 작성 방법 숙달
 
 
 
