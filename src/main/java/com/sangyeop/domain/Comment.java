@@ -43,4 +43,8 @@ public class Comment implements Serializable {
         this.modifiedDate = modifiedDate;
         this.toDo = toDo;
     }
+
+    public void createComment() {
+        this.createdDate = LocalDateTime.now();
+    }
 }

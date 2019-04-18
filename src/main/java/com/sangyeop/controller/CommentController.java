@@ -3,6 +3,7 @@ package com.sangyeop.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sangyeop.domain.Comment;
+import com.sangyeop.domain.CommentDTO;
 import com.sangyeop.domain.ToDo;
 import com.sangyeop.repository.CommentRepository;
 import com.sangyeop.repository.ToDoRepository;
@@ -29,8 +30,10 @@ public class CommentController {
     public ResponseEntity<? > commentPost(@PathVariable Long idx, @RequestBody Comment comment){
         ToDo toDo = toDoRepository.findByIdx(idx);
         toDo.add(comment);
-        commentRepository.save(comment);
-        return new ResponseEntity<>("{}" , HttpStatus.CREATED);
+        comment.createComment();
+        Comment savedComment = commentRepository.save(comment);
+        CommentDTO commentDTO = new CommentDTO(savedComment);
+        return new ResponseEntity<>(commentDTO , HttpStatus.CREATED);
     }
 
 }
