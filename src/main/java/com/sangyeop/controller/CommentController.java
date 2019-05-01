@@ -27,7 +27,7 @@ public class CommentController {
     CommentRepository commentRepository;
 
     @PostMapping("/{idx}")
-    public ResponseEntity<? > commentPost(@PathVariable Long idx, @RequestBody Comment comment){
+    public ResponseEntity<?> commentPost(@PathVariable Long idx, @RequestBody Comment comment){
         ToDo toDo = toDoRepository.findByIdx(idx);
         toDo.add(comment);
         comment.createComment();
@@ -36,4 +36,16 @@ public class CommentController {
         return new ResponseEntity<>(commentDTO , HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{idx}")
+    public ResponseEntity<?> commentDelete(@PathVariable Long idx) {
+        commentRepository.deleteById(idx);
+        return new ResponseEntity<>("{}" , HttpStatus.OK);
+    }
+
+    @PutMapping("/{idx}")
+    public ResponseEntity<?> commentPut(@PathVariable Long idx, @RequestBody Comment comment){
+        Comment savedComment = commentRepository.save(comment);
+        CommentDTO commentDTO = new CommentDTO(savedComment);
+        return new ResponseEntity<>(commentDTO , HttpStatus.CREATED);
+    }
 }

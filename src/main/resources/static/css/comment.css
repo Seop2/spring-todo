@@ -1,0 +1,12 @@
+.btn_reply_delete {
+    float: right;
+}
+
+.btn_reply_modify {
+    float: right;
+    margin-right: 10px;
+}
+
+.comment_content {
+    display: inline-block;
+}
