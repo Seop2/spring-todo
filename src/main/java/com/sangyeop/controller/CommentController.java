@@ -43,9 +43,11 @@ public class CommentController {
     }
 
     @PutMapping("/{idx}")
-    public ResponseEntity<?> commentPut(@PathVariable Long idx, @RequestBody Comment comment){
-        Comment savedComment = commentRepository.save(comment);
-        CommentDTO commentDTO = new CommentDTO(savedComment);
+    public ResponseEntity<?> commentPut(@PathVariable Long idx, @RequestBody Comment modify){
+        Comment origin = commentRepository.getOne(idx);
+        origin.modifyComment(modify);
+        commentRepository.save(origin);
+        CommentDTO commentDTO = new CommentDTO(origin);
         return new ResponseEntity<>(commentDTO , HttpStatus.CREATED);
     }
 }

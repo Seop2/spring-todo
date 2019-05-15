@@ -69,6 +69,7 @@ $(document).on('click', '.btn_reply_delete', function () {
     });
 });
 
+//댓글 수정
 $(document).on('click', '.btn_reply_modify', function () {
     var idx = $(this).parent().data('idx');
     var content = $(this).parent().find('p');

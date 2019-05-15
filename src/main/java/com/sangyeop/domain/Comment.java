@@ -1,9 +1,6 @@
 package com.sangyeop.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -43,6 +40,12 @@ public class Comment implements Serializable {
         this.modifiedDate = modifiedDate;
         this.toDo = toDo;
     }
+
+    public void modifyComment(Comment modify) {
+        this.modifiedDate  = LocalDateTime.now();
+        this.content = modify.getContent();
+    }
+
 
     public void createComment() {
         this.createdDate = LocalDateTime.now();

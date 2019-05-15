@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class ToDo implements Serializable {
     private User user;
 
     @OneToMany(mappedBy = "toDo")
+    @OrderBy("idx ASC")
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
