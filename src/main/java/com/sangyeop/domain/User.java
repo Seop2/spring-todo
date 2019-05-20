@@ -28,11 +28,12 @@ public class User implements Serializable {
 
     @Column
     @NotBlank(message = "아이디를 입력해주세요.")
+    @Length(min = 5, max = 9, message = "아이디 길이는 5~9 입니다.")
     private String id;
 
     @Column
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Length(min = 5, message = "비밀번호는 5자리 이상")
+    @Length(min = 9, message = "비밀번호는 9자리 이상 입니다.")
     private String pw;
 
     @Column

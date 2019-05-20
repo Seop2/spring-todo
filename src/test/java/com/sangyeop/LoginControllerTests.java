@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class LoginControllerTests {
+    private final String TEST_ID = "testid";
+    private final String TEST_PW = "testpasswd";
+    private final String TEST_EMAIL = "test@gmail.com";
 
     @Autowired
     ObjectMapper objectMapper;
@@ -44,7 +50,7 @@ public class LoginControllerTests {
 
     /* 로그인 페이지 GET 테스팅 */
     @Test
-    public void testGetSignIn() throws Exception {
+    public void getSignInPageTest() throws Exception {
         mockMvc.perform(get("/login/sign_up")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -52,7 +58,7 @@ public class LoginControllerTests {
 
     /* 회원가입 페이지 GET 테스팅 */
     @Test
-    public void testGetSignUp() throws Exception {
+    public void getSignUpPageTest() throws Exception {
         mockMvc.perform(get("/login/sign_in")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -60,27 +66,72 @@ public class LoginControllerTests {
 
     /* 회원가입 페이지 POST 테스팅 */
     @Test
-    public void testPostSign_up() throws Exception {
+    public void signUpPostSaveTest() throws Exception {
         User user = new User();
-        user.setId("test");
-        user.setPw("password");
-        user.setEmail("test@gmail.com");
+        user.setId(TEST_ID);
+        user.setPw(TEST_PW);
+        user.setEmail(TEST_EMAIL);
 
         this.mockMvc.perform(post("/login/sign_up")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isCreated());
 
-        assertNotNull(userRepository.findById("test"));
+        assertNotNull(userRepository.findById(TEST_ID));
+    }
+
+    /* 회원가입 유효성 테스트(ID 중복 체크) */
+    @Test
+    public void signUpDuplicationTest() throws Exception {
+
+        this.mockMvc.perform(post("/login/sign_up/valid_id")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\": \"newid\"}"))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(post("/login/sign_up/valid_id")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\": \"testid\"}"))
+                .andExpect(status().isBadRequest());
     }
 
     /* 회원가입 유효성 테스트(ID 미입력) */
     @Test
-    public void testPostSignUpValidID() throws Exception{
+    public void signUpInValidIdNotBlankTest() throws Exception {
         User user = new User();
         user.setId("");
-        user.setPw("password");
-        user.setEmail("test@gmail.com");
+        user.setPw(TEST_PW);
+        user.setEmail(TEST_EMAIL);
+
+        this.mockMvc.perform(post("/login/sign_up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    /* 회원가입 유효성 테스트(ID 길이 5이상) */
+    @Test
+    public void signUpInValidIdMinLengthTest() throws Exception {
+        User user = new User();
+        user.setId("test");
+        user.setPw(TEST_PW);
+        user.setEmail(TEST_EMAIL);
+
+        this.mockMvc.perform(post("/login/sign_up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    /* 회원가입 유효성 테스트(ID 길이 9이하) */
+    @Test
+    public void signUpInValidIdMaxLengthTest() throws Exception {
+        User user = new User();
+        user.setId("abcdefghij");
+        user.setPw(TEST_PW);
+        user.setEmail(TEST_EMAIL);
 
         this.mockMvc.perform(post("/login/sign_up")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -90,11 +141,25 @@ public class LoginControllerTests {
 
     /* 회원가입 유효성 테스트(PW 미입력) */
     @Test
-    public void testPostSignUpValidPW() throws Exception{
+    public void signUpInValidPWNotBlankTest() throws Exception {
         User user = new User();
-        user.setId("test");
+        user.setId(TEST_ID);
         user.setPw("");
-        user.setEmail("test@gmail.com");
+        user.setEmail(TEST_EMAIL);
+
+        this.mockMvc.perform(post("/login/sign_up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+    /* 회원가입 유효성 테스트(PW 길이 9이하) */
+    @Test
+    public void signUpInValidPWMinLengthTest() throws Exception {
+        User user = new User();
+        user.setId(TEST_ID);
+        user.setPw("12345678");
+        user.setEmail(TEST_EMAIL);
 
         this.mockMvc.perform(post("/login/sign_up")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,10 +169,10 @@ public class LoginControllerTests {
 
     /* 회원가입 유효성 테스트(E-mail BAD format) */
     @Test
-    public void testPostSignUpValidEmail() throws Exception{
+    public void signUpInValidEmailFormatTest() throws Exception {
         User user = new User();
-        user.setId("test");
-        user.setPw("password");
+        user.setId(TEST_ID);
+        user.setPw(TEST_PW);
         user.setEmail("@gmail.com");
 
         this.mockMvc.perform(post("/login/sign_up")
@@ -115,5 +180,5 @@ public class LoginControllerTests {
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
     }
-    
+
 }
